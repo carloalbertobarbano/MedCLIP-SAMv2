@@ -15,7 +15,7 @@ python saliency_maps/generate_saliency_maps.py \
 --finetuned \
 --hyper-opt \
 --val-path ${DATASET}/val_images \
---load_weights ${WEIGHTS}
+--load_weights "${WEIGHTS}"
 
 python postprocessing/postprocess_saliency_maps.py \
 --input-path ${DATASET}/test_images \
