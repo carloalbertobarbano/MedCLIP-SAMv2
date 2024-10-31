@@ -33,6 +33,10 @@ def calculate_dice_coefficient(mask1, mask2):
 def evaluate_on_sample(model, processor, tokenizer, text, image_paths, args):
     dice_scores = []  # Store Dice scores for each image
     for image_id in tqdm(image_paths):  # Iterate through images
+        gt_path = args.val_path.replace("images", "masks")
+        if not os.path.isfile(f"{gt_path}/{image_id}"):
+            continue # Skip if the ground truth mask does not exist (empty mask)
+
         try:
             # Open and preprocess the image
             image = Image.open(f"{args.val_path}/{image_id}").convert('RGB')
@@ -49,11 +53,7 @@ def evaluate_on_sample(model, processor, tokenizer, text, image_paths, args):
         vmap = vision_heatmap_iba(text_ids, image_feat, model, args.vlayer, args.vbeta, args.vvar, ensemble=args.ensemble, progbar=False)
         
         # Load the ground truth mask for comparison
-        gt_path = args.val_path.replace("images", "masks")
-        if not os.path.isfile(f"{gt_path}/{image_id}"):
-            gt_mask = np.zeros((image.size[1], image.size[0]))
-        else:
-            gt_mask = np.array(Image.open(f"{gt_path}/{image_id}").convert("L"))
+        gt_mask = np.array(Image.open(f"{gt_path}/{image_id}").convert("L"))
         
         # Resize the generated map to match the ground truth mask size
         vmap_resized = cv2.resize(np.array(vmap), (gt_mask.shape[1], gt_mask.shape[0]))
@@ -168,6 +168,11 @@ def main(args):
         # Skip if the saliency map already exists
         if(image_id in os.listdir(args.output_path)):
             continue
+
+        gt_path = args.input_path.replace("images", "masks")
+        if not os.path.isfile(f"{gt_path}/{image_id}"):
+            continue # Skip if the ground truth mask does not exist (empty mask)
+
         try:
             image = Image.open(f"{args.input_path}/{image_id}").convert('RGB')
         except:
