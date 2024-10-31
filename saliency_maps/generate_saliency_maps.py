@@ -143,19 +143,26 @@ def main(args):
     
     # Load the appropriate model based on the arguments
     if(args.model_name == "BiomedCLIP" and args.finetuned):
-        model = AutoModel.from_pretrained("./saliency_maps/model", trust_remote_code=True).to(args.device)
+        model = AutoModel.from_pretrained("./saliency_maps/model", trust_remote_code=True)
         processor = AutoProcessor.from_pretrained("chuhac/BiomedCLIP-vit-bert-hf", trust_remote_code=True)
         tokenizer = AutoTokenizer.from_pretrained("chuhac/BiomedCLIP-vit-bert-hf", trust_remote_code=True)
     elif(args.model_name == "BiomedCLIP" and not args.finetuned):
-        model = AutoModel.from_pretrained("chuhac/BiomedCLIP-vit-bert-hf", trust_remote_code=True).to(args.device)
+        model = AutoModel.from_pretrained("chuhac/BiomedCLIP-vit-bert-hf", trust_remote_code=True)
         processor = AutoProcessor.from_pretrained("chuhac/BiomedCLIP-vit-bert-hf", trust_remote_code=True)
         tokenizer = AutoTokenizer.from_pretrained("chuhac/BiomedCLIP-vit-bert-hf", trust_remote_code=True)
     elif(args.model_name == "CLIP" and not args.finetuned):
-        model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16").to(args.device)
+        model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16")
         processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch16")
         tokenizer = CLIPTokenizerFast.from_pretrained("openai/clip-vit-base-patch16")
     elif(args.model_name == "CLIP" and args.finetuned):
-        model = AutoModel.from_pretrained("./model", trust_remote_code=True).to(args.device)
+        model = AutoModel.from_pretrained("./model", trust_remote_code=True)
+
+    if args.load_weights is not None:
+        print("Loading finetuned weights from", args.load_weights)
+        checkpoint = torch.load(args.load_weights, map_location="cpu")
+        model.load_state_dict(checkpoint['model'])
+
+    model = model.to(args.device)
 
     # Get user input for the text to generate saliency maps
     text = str(input("Enter the text: "))
@@ -214,6 +221,7 @@ if __name__ == '__main__':
     parser.add_argument('--tlayer', type=int, default=9)
     parser.add_argument('--model-name', type=str, default="BiomedCLIP", help="Which CLIP model to use")
     parser.add_argument('--finetuned', action='store_true', help="Whether to use finetuned weights or not")
+    parser.add_argument('--load_weights', type=str, help="pretrained weights", default=None)
     parser.add_argument('--hyper-opt', action='store_true', help="Whether to optimize hyperparameters or not")
     parser.add_argument('--device', type=str, default="cuda", help="Device to run the model on")
     parser.add_argument('--ensemble', action='store_true', help="Whether to use text ensemble or not")
