@@ -50,7 +50,10 @@ def evaluate_on_sample(model, processor, tokenizer, text, image_paths, args):
         
         # Load the ground truth mask for comparison
         gt_path = args.val_path.replace("images", "masks")
-        gt_mask = np.array(Image.open(f"{gt_path}/{image_id}").convert("L"))
+        if not os.path.isfile(f"{gt_path}/{image_id}"):
+            gt_mask = np.zeros((image.size[1], image.size[0]))
+        else:
+            gt_mask = np.array(Image.open(f"{gt_path}/{image_id}").convert("L"))
         
         # Resize the generated map to match the ground truth mask size
         vmap_resized = cv2.resize(np.array(vmap), (gt_mask.shape[1], gt_mask.shape[0]))
