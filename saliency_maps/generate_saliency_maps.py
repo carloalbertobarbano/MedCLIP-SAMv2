@@ -33,8 +33,10 @@ def calculate_dice_coefficient(mask1, mask2):
 def evaluate_on_sample(model, processor, tokenizer, text, image_paths, args):
     dice_scores = []  # Store Dice scores for each image
     for image_id in tqdm(image_paths):  # Iterate through images
+
         gt_path = args.val_path.replace("images", "masks")
         if not os.path.isfile(f"{gt_path}/{image_id}"):
+            print("Skipping", image_id, "as ground truth mask is missing")
             continue # Skip if the ground truth mask does not exist (empty mask)
 
         try:
@@ -171,6 +173,7 @@ def main(args):
 
         gt_path = args.input_path.replace("images", "masks")
         if not os.path.isfile(f"{gt_path}/{image_id}"):
+            print("Skipping", image_id, "as ground truth mask is missing")
             continue # Skip if the ground truth mask does not exist (empty mask)
 
         try:
