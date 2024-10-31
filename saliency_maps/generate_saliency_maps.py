@@ -174,15 +174,12 @@ def main(args):
         os.makedirs(args.output_path)
 
     # Iterate through the input images and generate saliency maps
-    for image_id in tqdm(sorted(os.listdir(args.input_path))):
+    mask_path = args.input_path.replace("images", "masks")
+    for image_id in tqdm(sorted(os.listdir(mask_path))):
         # Skip if the saliency map already exists
+
         if(image_id in os.listdir(args.output_path)):
             continue
-
-        gt_path = args.input_path.replace("images", "masks")
-        if not os.path.isfile(f"{gt_path}/{image_id}"):
-            print("Skipping", image_id, "as ground truth mask is missing")
-            continue # Skip if the ground truth mask does not exist (empty mask)
 
         try:
             image = Image.open(f"{args.input_path}/{image_id}").convert('RGB')
