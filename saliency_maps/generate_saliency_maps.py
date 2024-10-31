@@ -85,6 +85,14 @@ def hyper_opt(model, processor, tokenizer, text, args):
 
     # Get all image IDs from the validation path
     all_image_ids = sorted(os.listdir(args.val_path))
+    print("Total val images:", len(all_image_ids))
+    filtered_image_ids = []
+    gt_path = args.val_path.replace("images", "masks")
+    for image_id in all_image_ids:
+        if os.path.isfile(f"{gt_path}/{image_id}"):
+            filtered_image_ids.append(image_id)
+    all_image_ids = filtered_image_ids
+    print("Total val images with masks:", len(all_image_ids))
 
     results = []  # Store results of each combination
 
