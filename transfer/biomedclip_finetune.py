@@ -29,7 +29,7 @@ def parse_args():
     # Misc
     parser.add_argument('--device', type=str, help='torch device', default='cuda')
     parser.add_argument('--save_dir', type=str, help='output dir', default='output')
-    parser.add_argument('--print_every', default=50, type=int)
+    parser.add_argument('--print_every', default=1, type=int)
     parser.add_argument('--trial', default=0, type=int)
 
     # Data
@@ -40,17 +40,17 @@ def parse_args():
     parser.add_argument('--caption_file', type=str, default="captions.json")
 
     # Model
-    parser.add_argument('--model', type=str, help='model name', choices=['vit', 'resnet'], default='vit')
+    parser.add_argument('--model', type=str, help='model name', default='BiomedCLIP')
 
     # Training
     parser.add_argument('--definition_caption', action='store_true',
                         help='prepend each caption with "A <xxx> is <caption>"')
     parser.add_argument('--pl', action='store_true', help='plural definition')
-    parser.add_argument('--batch_size', type=int, help='batch size', default=32)
-    parser.add_argument('--lr', type=float, help='learning rate', default=5e-5)
+    parser.add_argument('--batch_size', type=int, help='batch size', default=4)
+    parser.add_argument('--lr', type=float, help='learning rate', default=1e-5)
     parser.add_argument('--weight_decay', type=float, help='weight decay', default=0.2)
     parser.add_argument('--temperature', type=float, help='InfoNCE temperature', default=0.07)
-    parser.add_argument('--epochs', type=int, help='number of epochs', default=10)
+    parser.add_argument('--epochs', type=int, help='number of epochs', default=1)
     parser.add_argument('--noise', action='store_true', help='use noise image instead of inverted')
     parser.add_argument('--kd_weight', type=float, default=0, help='weight of knowledge distillation')
     args = parser.parse_args()
